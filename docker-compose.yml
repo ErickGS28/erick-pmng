@@ -1,0 +1,39 @@
+
+services:
+  pmng-mysql:
+    container_name: pmng-mysql
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${ENV_DB_PASS}
+      MYSQL_DATABASE: ${ENV_DB_NAME}
+    ports:
+      - "3306:3306"
+    networks:
+      - pmng-net
+
+  pmng-back:
+    container_name: pmng-services
+    build:
+      context: ./people-again
+    environment:
+      DC_SERVER_PORT: ${ENV_SERVER_PORT}
+      ENV_DB_URL: ${ENV_DB_URL}
+      DC_DB_USER: ${ENV_DB_USER}
+      DC_DB_PASS: ${ENV_DB_PASS}
+    ports:
+      - "8089:8080"
+    depends_on:
+      - pmng-mysql
+    networks:
+      - pmng-net
+
+  pmng-front:
+    container_name: pmng-front
+    build:
+      context: ./frontend
+    ports:
+      - "5173:80"
+
+networks:
+  pmng-net:
+    driver: bridge
