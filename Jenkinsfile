@@ -12,7 +12,10 @@ pipeline {
         stage('Parar servicios') {
             steps {
                 echo 'Deteniendo servicios'
-                sh '$DC -p $COMPOSE_PROJECT_NAME -f $COMPOSE_FILE --env-file $ENV_FILE down'
+                sh '''
+                    $DC -p $COMPOSE_PROJECT_NAME -f $COMPOSE_FILE --env-file $ENV_FILE down || true
+                    docker rm -f pmng-mysql pmng-services pmng-front || true
+                '''
             }
         }
 
